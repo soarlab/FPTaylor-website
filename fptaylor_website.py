@@ -39,6 +39,12 @@ def run_fptaylor(query):
 
         if "Potential exception detected: Sqrt of negative number at:" in err:
             return "SQRT_RANGE"
+
+        if "Potential exception detected: Division by zero at:" in err:
+            return "DIV_ZERO"
+
+        if "Potential exception detected: Log of non-positive number at:" in err:
+            return "LOG_RANGE"
         
         match = re.search(r"Bounds \(floating-point\): \[([^,]*), ([^,]*)\]", out)
         lower_bound = match.group(1)
@@ -137,6 +143,44 @@ FPTaylor is available on <a href=https://github.com/soarlab/FPTaylor.git>GitHub<
 </html>
 """
 
+DIV_ZERO = \
+"""
+<!doctype html>
+<html>
+<title>Domain error</title>
+<body>
+<h1>Input query</h1>
+<pre>
+{query}
+</pre>
+<h1>FPTaylor output</h1>
+FPTaylor found a possible division by zero.
+</body>
+<pre>
+FPTaylor is available on <a href=https://github.com/soarlab/FPTaylor.git>GitHub</a>
+</pre>
+</html>
+"""
+
+LOG_RANGE = \
+"""
+<!doctype html>
+<html>
+<title>Domain error</title>
+<body>
+<h1>Input query</h1>
+<pre>
+{query}
+</pre>
+<h1>FPTaylor output</h1>
+FPTaylor found a possible log of a non-positive number.
+</body>
+<pre>
+FPTaylor is available on <a href=https://github.com/soarlab/FPTaylor.git>GitHub</a>
+</pre>
+</html>
+"""
+
 INVALID_INPUT = \
 """
 <!doctype html>
@@ -169,6 +213,10 @@ def get_run():
     res = run_fptaylor(query)
     if res == "SQRT_RANGE":
         output = SQRT_RANGE.format(query=query)
+    elif res == "DIV_ZERO":
+        output = DIV_ZERO.format(query=query)
+    elif res == "LOG_RANGE":
+        output = LOG_RANGE.format(query=query)
     elif res == "TIMEOUT":
         output = TIMEOUT.format(query=query)
     elif res == "INVALID_INPUT":
